@@ -1,49 +1,38 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { useState } from "react";
 
 const projects = [
-  { number: "01", title: "Autonomous flight, with a human in mind.", type: "UAV SYSTEMS / COMPUTER VISION", body: "At ACCEL UAV, I work across the interfaces that make missions clearer and safer - from live MAVLink telemetry and terrain-aware path planning to flight guidance for VTOL and multirotor systems.", tags: ["MAVLink", "QGroundControl", "ROS", "Pixhawk"] },
-  { number: "02", title: "Precision landing on an ArUco array.", type: "ROBOTICS / VISUAL SERVOING", body: "A downward-facing camera, OpenCV markers and a PID loop work together to steer descent. Simulated in Gazebo, then proven in flight with consistent sub-10 cm static-array landings.", tags: ["OpenCV", "ArUco", "Gazebo", "PID"] },
-  { number: "03", title: "Skin intelligence, made approachable.", type: "ML / FULL-STACK PRODUCT", body: "A CNN-powered dermatology classifier designed as a real product experience - 90%+ validation accuracy, an accessible Figma system, and a Flask API for real-time image inference.", tags: ["TensorFlow", "Flask", "Figma", "REST API"] },
-  { number: "04", title: "Crowd sensing at the edge.", type: "AI / UAV / HACKATHON", body: "A 3-foot H-frame drone with dual Raspberry Pis, Pixhawk and a custom Arduino gimbal. Built to recognise density patterns and surface stampede-risk zones in real time. 3rd place, AI Hackathon 2025.", tags: ["Raspberry Pi", "YOLO", "Edge AI", "Arduino"] },
+  { no: "01", code: "UAV / SYSTEMS", title: "Flight systems that make the field legible.", summary: "Live MAVLink telemetry, terrain-aware planning and fleet-specific QGroundControl work for VTOL and multirotor missions at ACCEL UAV.", tools: "MAVLink · QGroundControl · ROS · Pixhawk", className: "map" },
+  { no: "02", code: "VISION / ROBOTICS", title: "A landing target the drone can understand.", summary: "OpenCV ArUco detection and a PID visual-servo loop, simulated in Gazebo then flight-tested for consistent sub-10 cm landings.", tools: "OpenCV · ArUco · Gazebo · PID", className: "target" },
+  { no: "03", code: "ML / PRODUCT", title: "Medical intelligence, shaped into a product.", summary: "A CNN skin-disease classifier with 90%+ validation accuracy, paired with an accessible Figma system and Flask inference API.", tools: "TensorFlow · Flask · Figma · REST", className: "scan" },
+  { no: "04", code: "EDGE / UAV", title: "Crowd sensing before crowds become danger.", summary: "A dual-Raspberry Pi drone with a custom gimbal and edge AI density pipeline. Third place, AI Hackathon 2025.", tools: "YOLO · Raspberry Pi · Pixhawk · Arduino", className: "radar" },
 ];
 
-const skillGroups = [
-  ["Machine intelligence", "TensorFlow · PyTorch · YOLO · Hugging Face · OpenCV"],
-  ["Flight & robotics", "ROS · MAVLink · Pixhawk · Jetson Nano · RPLIDAR"],
-  ["Digital products", "Figma · Design systems · HTML/CSS/JS · Tailwind · Webflow"],
-  ["Build & ship", "Python · Flask · Node.js · SQL · Git · AWS"],
-];
+const rise = { hidden: { opacity: 0, y: 26 }, show: { opacity: 1, y: 0 } };
 
 export default function Home() {
+  const [activeProject, setActiveProject] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
-  useEffect(() => {
-    const reveal = new IntersectionObserver((entries) => entries.forEach((entry) => entry.isIntersecting && entry.target.classList.add("is-visible")), { threshold: 0.12 });
-    document.querySelectorAll(".reveal").forEach((el) => reveal.observe(el));
-    return () => reveal.disconnect();
-  }, []);
+  const reduceMotion = useReducedMotion();
+  const stagger = reduceMotion ? {} : { transition: { staggerChildren: 0.08, delayChildren: 0.12 } };
 
-  return (
-    <main>
-      <nav className="nav"><a className="monogram" href="#top" aria-label="Back to top">LKB<span>°</span></a><div className={menuOpen ? "links open" : "links"}><a href="#work" onClick={() => setMenuOpen(false)}>Selected work</a><a href="#about" onClick={() => setMenuOpen(false)}>About</a><a href="#contact" onClick={() => setMenuOpen(false)}>Contact</a></div><button className="menu" onClick={() => setMenuOpen(!menuOpen)} aria-label="Toggle menu">{menuOpen ? "Close" : "Menu"}</button></nav>
+  return <main>
+    <div className="telemetry" aria-hidden="true"><span>LK/26</span><i /><span>16.6807° N</span><span>82.2600° E</span><i /><span>SYS: ONLINE</span></div>
+    <motion.nav className="nav" initial={{ opacity: 0, y: -14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .45 }}><a className="brand" href="#top">LOHITH<span>_</span></a><div className="navlinks"><a href="#work">Work</a><a href="#about">Profile</a><a href="#contact">Contact</a></div><button className="menu" onClick={() => setMenuOpen(!menuOpen)} aria-expanded={menuOpen}>Index {menuOpen ? "−" : "+"}</button></motion.nav>
+    <AnimatePresence>{menuOpen && <motion.div className="mobile-menu" initial={{ opacity: 0, y: -12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }}><a onClick={() => setMenuOpen(false)} href="#work">Work</a><a onClick={() => setMenuOpen(false)} href="#about">Profile</a><a onClick={() => setMenuOpen(false)} href="#contact">Contact</a></motion.div>}</AnimatePresence>
 
-      <section className="hero" id="top">
-        <div className="eyebrow">Portfolio / 2026 <span>Visakhapatnam, India</span></div>
-        <div className="hero-copy"><p className="intro">I’m Lohith - an engineer who likes to move between <i>intelligence, interfaces</i> and things that fly.</p><h1>Making complex<br/><em>systems</em> feel clear.</h1></div>
-        <div className="hero-foot"><span>Software engineer · AI/ML · Drone autonomy · Product design</span><a href="#work" className="scroll-link">Explore the work <b>↓</b></a></div>
-        <div className="orbit orbit-a"/><div className="orbit orbit-b"/><div className="signal">01<br/><small>signal<br/>found</small></div>
-      </section>
+    <section className="hero" id="top"><div className="crosshair" aria-hidden="true"/><motion.div className="hero-meta" initial="hidden" animate="show" variants={stagger}><motion.span variants={rise}>PORTFOLIO / 2026</motion.span><motion.span variants={rise}>VISAKHAPATNAM / INDIA</motion.span></motion.div><motion.div className="hero-title" initial="hidden" animate="show" variants={stagger}><motion.p variants={rise}>Software engineer / designer / aerial systems thinker</motion.p><motion.h1 variants={rise}>BUILDING<br/>SYSTEMS<br/><em>IN MOTION.</em></motion.h1></motion.div><motion.div className="hero-bottom" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: .7 }}><span>AI/ML + COMPUTER VISION + UAV AUTONOMY</span><a href="#work">SCROLL TO EXPLORE <b>↓</b></a></motion.div></section>
 
-      <section className="statement reveal"><p className="kicker">A hybrid practice</p><h2>I build where software,<br/>spatial thinking and <em>real-world</em><br/>constraints meet.</h2><p className="side-note">From an autonomous drone’s point of view to a thoughtful product interface, I care about the moment complicated technology becomes intuitive.</p></section>
+    <section className="manifesto" id="about"><motion.div className="manifesto-kicker" whileInView={{ x: 0, opacity: 1 }} initial={{ x: -30, opacity: 0 }} viewport={{ once: true }}><span>01</span><p>MY PRACTICE</p></motion.div><motion.h2 initial="hidden" whileInView="show" viewport={{ once: true, amount: .35 }} variants={stagger}><motion.span variants={rise}>I turn invisible</motion.span><motion.span variants={rise}><em>intelligence</em> into</motion.span><motion.span variants={rise}>things people can</motion.span><motion.span variants={rise}>actually use.</motion.span></motion.h2><motion.p className="manifesto-note" initial={{ opacity: 0, y: 18 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>A design-trained engineer working where live data, physical machines, and clear product decisions need to meet.</motion.p></section>
 
-      <section className="work" id="work"><div className="section-head reveal"><p className="kicker">Selected work</p><span>04 / projects with purpose</span></div><div className="project-list">{projects.map((project, index) => <article className="project reveal" key={project.number}><div className="project-index">{project.number}</div><div className={`project-art art-${index + 1}`}><div className="art-label">{project.tags[0]}<br/>{project.tags[1]}</div><div className="art-shape"/></div><div className="project-copy"><p className="project-type">{project.type}</p><h3>{project.title}</h3><p>{project.body}</p><div className="tags">{project.tags.map((tag) => <span key={tag}>{tag}</span>)}</div></div></article>)}</div></section>
+    <section className="work" id="work"><div className="section-label"><span>02</span><p>SELECTED TRANSMISSIONS</p><span>2022 — NOW</span></div><div className="project-grid">{projects.map((project, index) => <motion.article className={`project-card ${index === activeProject ? "active" : ""}`} key={project.no} onMouseEnter={() => setActiveProject(index)} onFocus={() => setActiveProject(index)} tabIndex={0} initial={{ opacity: 0, y: 34 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: .18 }} transition={{ duration: .45, delay: index * .07 }} whileHover={reduceMotion ? undefined : { y: -7 }}><div className={`signal-art ${project.className}`}><span>{project.no}</span><div className="art-core"/><div className="art-lines"/></div><div className="project-head"><span>{project.code}</span><b>↗</b></div><h3>{project.title}</h3><p>{project.summary}</p><footer>{project.tools}</footer></motion.article>)}</div></section>
 
-      <section className="about" id="about"><div className="about-grid"><div className="about-main reveal"><p className="kicker">The person behind the systems</p><h2>Equal parts <em>builder</em>,<br/>designer, and curious<br/>field tester.</h2><p>I’m a Computer Science Engineering student at GITAM and a software engineering intern at ACCEL UAV. My work shifts happily from a Figma canvas to a flight stack - because the best outcomes need both precision and empathy.</p><a className="text-link" href="mailto:lohithkrishnabhagavan95@gmail.com">Start a conversation <b>↗</b></a></div><div className="note-card reveal"><span className="pin"/><p>Currently</p><strong>Designing autonomous flight experiences & building AI that earns its place in the real world.</strong><small>ACCEL UAV / 2025 - present</small></div></div><div className="skills reveal">{skillGroups.map(([name, detail], index) => <div className="skill" key={name}><span>0{index + 1}</span><strong>{name}</strong><p>{detail}</p></div>)}</div></section>
+    <section className="capabilities"><div className="section-label"><span>03</span><p>CAPABILITY STACK</p><span>FULL-SPECTRUM</span></div><div className="capability-list">{[["01", "Machine intelligence", "TensorFlow, PyTorch, YOLO, Hugging Face, OpenCV"], ["02", "Autonomous flight", "ROS, MAVLink, Pixhawk, Jetson Nano, RPLIDAR"], ["03", "Digital experiences", "Figma, design systems, HTML/CSS/JS, Tailwind, Webflow"], ["04", "Production systems", "Python, Flask, Node.js, SQL, Git, AWS"]].map(([id, title, detail]) => <motion.div className="capability" key={id} initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} whileHover={{ paddingLeft: 14 }}><span>{id}</span><h3>{title}</h3><p>{detail}</p><b>+</b></motion.div>)}</div></section>
 
-      <section className="recognition reveal"><p className="kicker">A few markers along the way</p><div><h2>3rd place<br/><em>AI Hackathon</em><br/>2025</h2><p>Team lead, Smart India Hackathon 2024 internal edition. Python Full-Stack Developer and UI/UX Design certified.</p></div></section>
+    <section className="credibility"><motion.div className="award" initial={{ rotate: -8, opacity: 0 }} whileInView={{ rotate: -3, opacity: 1 }} viewport={{ once: true }} transition={{ type: "spring", stiffness: 90 }}><small>AWARD SIGNAL</small><strong>03<sup>RD</sup></strong><span>AI HACKATHON<br/>2025</span></motion.div><div><p className="eyebrow">OPERATING NOTES</p><h2>Leading teams,<br/>testing systems,<br/><em>staying curious.</em></h2><p className="cred-copy">Team Lead, Autonomous Aerial Robotics at GITAM’s Center for Autonomous Systems. Smart India Hackathon 2024 internal edition finalist. Software Engineering Intern at ACCEL UAV.</p></div></section>
 
-      <footer id="contact"><div><p className="kicker">Have a problem worth solving?</p><h2>Let’s make it<br/><em>move.</em></h2></div><div className="contact-links"><a href="mailto:lohithkrishnabhagavan95@gmail.com">lohithkrishnabhagavan95@gmail.com <b>↗</b></a><a href="https://www.linkedin.com/in/lohtith" target="_blank">LinkedIn <b>↗</b></a><span>© 2026 Dammu Lohith Krishna Bhagavan</span></div></footer>
-    </main>
-  );
+    <footer className="contact" id="contact"><div><p className="eyebrow">OPEN CHANNEL</p><h2>GOT A SYSTEM<br/>WORTH <em>BUILDING?</em></h2></div><div className="contact-data"><a href="mailto:lohithkrishnabhagavan95@gmail.com">lohithkrishnabhagavan95@gmail.com <b>↗</b></a><a target="_blank" href="https://www.linkedin.com/in/lohtith">linkedin.com/in/lohtith <b>↗</b></a><span>© 2026 DAMMU LOHITH KRISHNA BHAGAVAN</span></div></footer>
+  </main>;
 }
