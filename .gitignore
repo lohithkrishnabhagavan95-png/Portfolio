@@ -39,6 +39,9 @@ next-env.d.ts
 /dist/
 /.wrangler/
 /outputs/
+/output/
+/.site-stage/
+/.site-stage-motion/
 /work/
 .dev.log
 /tmp/
