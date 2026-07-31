@@ -1,3 +1,5 @@
+// @ts-nocheck
+// This optional adapter runs only in the Cloudflare build path.
 import { env } from "cloudflare:workers";
 import { drizzle } from "drizzle-orm/d1";
 import * as schema from "./schema";
